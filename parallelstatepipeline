@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+tools{
+    maven 'maven-3.9.4'
+}
+
+
+
+    stages {
+        stage('checkooutcode') {
+            steps {
+                git branch: "development", credentialsId: '5236afc7-54a0-4ba0-af90-71ea13496a87', url: 'https://github.com/yogeshsunny05/maven-web-application.git'
+            
+            }
+        }
+    stage('Test&Build'){ 
+        steps{
+            parallel (
+
+Test: {
+
+sh "mvn test"
+
+},
+
+Build: { 
+    sh "mvn package" 
+
+}
+)
+}
+
+}
+    }//stagesclosing
+}//pipelineclosing
