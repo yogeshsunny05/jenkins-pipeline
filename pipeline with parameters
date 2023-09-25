@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+tools{
+    maven 'maven-3.9.4'
+}
+
+parameters {
+  choice choices: ['master', 'development', 'stage', 'uat'], name: 'BranchName'
+  string defaultValue: 'DevOps', description: 'change the default course name if you want..', name: 'CourseName'
+}
+
+
+
+    stages {
+        stage('checkooutcode') {
+            steps {
+                git branch: "${params.BranchName}", credentialsId: '5236afc7-54a0-4ba0-af90-71ea13496a87', url: 'https://github.com/yogeshsunny05/maven-web-application.git'
+            
+            }
+        }
+    stage('Build'){
+        steps{
+            sh "mvn clean package"
+            sh "echo The Course Name is ${params.CourseName}"
+        }
+    }    
+    }//stagesclosing
+}//pipelineclosing
