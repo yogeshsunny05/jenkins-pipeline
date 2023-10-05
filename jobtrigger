@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        stage ('trigger facebook-qaenv'){
+            steps {
+                build job: "facebook-qaenv"
+            }
+        }
+    }
+}
