@@ -4,32 +4,23 @@ tools{
     maven 'maven-3.9.4'
 }
 
-
-
     stages {
-        stage('checkooutcode') {
+        stage('branchcheckout') {
             steps {
-                git branch: "development", credentialsId: '5236afc7-54a0-4ba0-af90-71ea13496a87', url: 'https://github.com/yogeshsunny05/maven-web-application.git'
-            
+                git branch:"development", credentialsId: '5f8e2813-4402-4f85-aa70-5b2a8d29122e', url: 'https://github.com/yogeshsunny05/maven-web-application.git'
             }
         }
-    stage('Test&Build'){ 
+stage('Test&Build'){ 
         steps{
             parallel (
-
 Test: {
-
 sh "mvn test"
-
 },
-
 Build: { 
     sh "mvn package" 
-
 }
 )
 }
-
 }
     }//stagesclosing
 }//pipelineclosing
