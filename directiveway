@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+stages {    
+  stage('CreateDirsandFiles'){
+  steps{
+  sh "touch test.py"
+  dir('/tmp/pipeline/'){
+  sh "touch pipeline.txt"
+  sh "touch test.sh"
+  }
+  }
+  }
+
+}
+}
