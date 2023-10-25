@@ -1,0 +1,55 @@
+node
+{
+}
+pipeline{
+ agent any
+tools{
+maven 'maven-3.9.4'
+}
+ stages{
+//checkoutcodefromgithub
+  stage('CheckOutCode'){
+steps{
+git credentialsId: '763cb4f7-70d9-48ee-9756-c087aa2eb712', url: 'https://github.com/yogeshsunny05/java-web-app-docker.git'
+}
+}
+//build
+stage('Build')
+{
+steps{
+sh "mvn clean package"
+}
+}
+//builddockerimage
+stage('build docker image')
+{
+  steps{
+    sh "docker build -t awsdevops05/java-web-application:1 ."
+       }
+}
+//dockerlogin
+stage('Docker login '){
+    steps{
+        withCredentials([string(credentialsId: 'dockerhubpassword', variable: 'dockerhubpassword')]) {
+     sh"docker login -u awsdevops05  -p ${dockerhubpassword}"
+}
+    }
+}
+//dockerpush
+stage('dockerpush'){
+    steps{
+        sh "docker push awsdevops05/java-web-application:1"
+    }
+}
+
+//deploy
+stage('application as container'){
+     sshagent(['dockerjenkins_SSH']) {
+    sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.32.170" 
+}
+steps {
+    sh "docker run -d --name javawebapplication -p 8080:8080 awsdevops05/java-web-application:1"
+    } 
+}
+}//stagesclosing
+}//pipelineclosing
