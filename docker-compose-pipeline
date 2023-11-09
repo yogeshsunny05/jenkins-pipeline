@@ -1,0 +1,54 @@
+pipeline{
+ agent any
+tools{
+maven 'maven-3.9.4'
+}
+ stages{
+//checkoutcodefromgithub
+  stage('CheckOutCode'){
+steps{
+git credentialsId: '763cb4f7-70d9-48ee-9756-c087aa2eb712', url: 'https://github.com/yogeshsunny05/maven-web-application.git'
+}
+}
+//build
+stage('Build')
+{
+steps{
+sh "mvn clean package"
+}
+}
+//builddockerimage
+stage('build docker image')
+{
+  steps{
+     sh "docker build -t awsdevops05/maven-web-application:1.0 ."
+       }
+}
+
+//dockerlogin
+stage('Docker login '){
+    steps{
+        withCredentials([string(credentialsId: 'dockerhubpassword', variable: 'dockerhubpassword')]) {
+     sh"docker login -u awsdevops05  -p ${dockerhubpassword}"
+}
+    }
+}
+
+//dockerpush
+stage('dockerpush'){
+    steps{
+       sh "docker push awsdevops05/maven-web-application:1.0"
+    }
+}
+
+
+stage('CreateandRunContainer'){
+            steps{
+                sshagent(['9ab68e6d-c76d-48ce-a4e7-5be45400a403']){
+                sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/docker-compose/docker-compose.yml ubuntu@172.31.6.11:/home/ubuntu/docker-compose.yml'
+                sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.6.11 docker-compose up -d'  
+                }
+            }
+        }
+}//stagesclosing
+}//pipelineclosing
